@@ -34,7 +34,8 @@ pipeline {
       post {
         success {
           echo 'Now Archiving it ...'
-          archiveArtifacts artifacts: '**/dist' 
+          sh 'tar -czf dist.tar.gz ./dist'
+          archiveArtifacts artifacts: 'dist.tar.gz' 
         }
       }
     }
