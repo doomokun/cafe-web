@@ -34,7 +34,7 @@ pipeline {
       post {
         success {
           echo 'Now Archiving it ...'
-          archiveArtifacts artifacts: '**/dict' 
+          archiveArtifacts artifacts: '**/dist' 
         }
       }
     }
