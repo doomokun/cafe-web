@@ -13,15 +13,16 @@ pipeline {
       }
     }
 
+    // stage('Test') {
+    //   steps {
+    //     sh 'docker --version'
+    //     sh 'npm version'
+    //   }
+    // }
+
     stage('Test') {
       steps {
-        sh 'docker --version'
-      }
-    }
-
-    stage('Test node') {
-      steps {
-        sh 'npm version'
+        sh 'npm install'
       }
     }
 
