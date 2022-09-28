@@ -25,14 +25,18 @@ pipeline {
       }
     }
 
-    // stage('Upload App image') {
-    //   post {
-    //     success {
-    //       echo 'Now Archiving it ...'
-    //       archiveArtifacts artifacts: '**/dict' 
-    //     }
-    //   }
-    // }
+    stage('Build') {
+      steps {
+        sh 'npm run build'
+      }
+
+      post {
+        success {
+          echo 'Now Archiving it ...'
+          archiveArtifacts artifacts: '**/dict' 
+        }
+      }
+    }
 
   }
 }
