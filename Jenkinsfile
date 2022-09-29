@@ -1,9 +1,9 @@
 pipeline {
-  agent any
+  agent { label 'docker' }
 
-  tools {
-    nodejs 'node-16.17.1'
-  }
+  // tools {
+  //   nodejs 'node-16.17.1'
+  // }
 
   stages {
 
@@ -20,23 +20,30 @@ pipeline {
     //   }
     // }
 
-    stage('Test') {
-      steps {
-        sh 'npm install'
-      }
-    }
+    // stage('Test') {
+    //   steps {
+    //     sh 'npm install'
+    //   }
+    // }
 
-    stage('Build') {
-      steps {
-        sh 'npm run build'
-      }
+    // stage('Build') {
+    //   steps {
+    //     sh 'npm run build'
+    //   }
 
-      post {
-        success {
-          echo 'Now Archiving it ...'
-          sh 'tar -czf dist.tar.gz ./dist'
-          archiveArtifacts artifacts: 'dist.tar.gz' 
-        }
+    //   post {
+    //     success {
+    //       echo 'Now Archiving it ...'
+    //       sh 'tar -czf dist.tar.gz ./dist'
+    //       archiveArtifacts artifacts: 'dist.tar.gz' 
+    //     }
+    //   }
+    // }
+
+    stage('Docker Build') {
+      steps {
+        sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
+        sh 'docker compose ps'
       }
     }
 
