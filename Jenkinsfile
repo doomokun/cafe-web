@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'docker' }
+  agent any
 
   // tools {
   //   nodejs 'node-16.17.1'
@@ -42,7 +42,7 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
+        // sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
         sh 'docker compose ps'
       }
     }
