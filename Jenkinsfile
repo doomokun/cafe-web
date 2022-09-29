@@ -43,6 +43,7 @@ pipeline {
     stage('Docker Build') {
       steps {
         // sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
+        echo 'docker compose ps.....'
         sh 'docker compose ps'
       }
     }
