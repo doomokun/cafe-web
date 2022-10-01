@@ -1,9 +1,9 @@
 pipeline {
   agent any
 
-  // tools {
-  //   nodejs 'node-16.17.1'
-  // }
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('jenkins-dev-key-dockerhub')
+	}
 
   stages {
 
@@ -13,33 +13,29 @@ pipeline {
       }
     }
 
-    stage('Test') {
+    stage('Build') {
       steps {
-        sh 'docker -version'
+        sh 'docker build -t tommydevv1/cafe-web:latest .'
       }
     }
 
-    // stage('Build') {
-    //   steps {
-    //     sh 'npm run build'
-    //   }
+		stage('Login') {
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
 
-    //   post {
-    //     success {
-    //       echo 'Now Archiving it ...'
-    //       sh 'tar -czf dist.tar.gz ./dist'
-    //       archiveArtifacts artifacts: 'dist.tar.gz' 
-    //     }
-    //   }
-    // }
-
-    // stage('Docker Build') {
-    //   steps {
-    //     // sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
-    //     echo 'docker compose ps.....'
-    //     sh 'docker compose ps'
-    //   }
-    // }
+		stage('Push') {
+			steps {
+				sh 'docker push tommydevv1/cafe-web:latest'
+			}
+		}
 
   }
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
 }
