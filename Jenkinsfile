@@ -13,18 +13,11 @@ pipeline {
       }
     }
 
-    // stage('Test') {
-    //   steps {
-    //     sh 'docker --version'
-    //     sh 'npm version'
-    //   }
-    // }
-
-    // stage('Test') {
-    //   steps {
-    //     sh 'npm install'
-    //   }
-    // }
+    stage('Test') {
+      steps {
+        sh 'docker ps'
+      }
+    }
 
     // stage('Build') {
     //   steps {
@@ -40,13 +33,13 @@ pipeline {
     //   }
     // }
 
-    stage('Docker Build') {
-      steps {
-        // sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
-        echo 'docker compose ps.....'
-        sh 'docker compose ps'
-      }
-    }
+    // stage('Docker Build') {
+    //   steps {
+    //     // sh 'docker-compose -f build.yml up --exit-code-from fpm_build --remove-orphans fpm_build'
+    //     echo 'docker compose ps.....'
+    //     sh 'docker compose ps'
+    //   }
+    // }
 
   }
 }
