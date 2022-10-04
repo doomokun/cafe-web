@@ -2,6 +2,9 @@
   <div class="about">
     <div v-for="user in users">
       <div>
+        api root: {{ env.VITE_API_ROOT }}
+      </div>
+      <div>
         ID: {{ user.id }}
       </div>
       <div>
@@ -24,6 +27,7 @@
     name: 'AboutView',
     data() {
       return {
+        env: import.meta.env,
         users: [{
           id: '',
           email: '',
