@@ -3,7 +3,7 @@ import axios from '../config/axios'
 
 export const getUser = async (): Promise<any[]> => {
     try {
-        const res = await axios.get('/user');
+        const res = await axios.get('/api/user');
         console.log(res);
         return res.data;
     } catch (err) {
