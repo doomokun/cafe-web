@@ -2,13 +2,16 @@
 FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY . .
-EXPOSE 3000
-RUN npm install
-CMD ["npm", "run", "dev"]
-# RUN npm run build
+
+# dev env
+# EXPOSE 3000
+# RUN npm install
+# CMD ["npm", "run", "dev"]
 
 # production stage
-# FROM nginx:stable-alpine as production-stage
-# COPY --from=build-stage /app/dist /usr/share/nginx/html
-# EXPOSE 80
-# CMD ["nginx", "-g", "daemon off;"]
+RUN npm install
+RUN npm run build --production
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
