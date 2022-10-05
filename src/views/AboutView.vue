@@ -1,9 +1,9 @@
 <template>
   <div class="about">
+    <div>
+      api root: {{ env.VITE_API_ROOT }}
+    </div>
     <div v-for="user in users">
-      <div>
-        api root: {{ env.VITE_API_ROOT }}
-      </div>
       <div>
         ID: {{ user.id }}
       </div>
