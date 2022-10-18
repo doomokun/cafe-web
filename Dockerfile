@@ -1,5 +1,9 @@
 # build stage
 FROM node:lts-alpine as build-stage
+
+# Security: do not use the `root` user.
+USER node
+
 WORKDIR /app
 COPY . .
 
