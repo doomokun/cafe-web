@@ -7,6 +7,7 @@ USER node
 WORKDIR /app
 COPY . .
 
+ENV "VITE_API_ROOT" "http://localhost:8080/api"
 # dev env
 # EXPOSE 3000
 # RUN npm install
