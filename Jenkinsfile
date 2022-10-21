@@ -7,7 +7,7 @@ def helmInit() {
 
 def helmRepo(Map args) {
 	println "添加 course repo"
-	sh "helm repo add 3-tier-app-repo https://doomokun.github.io/3-tier-app-chart"
+	sh "helm repo add ${args.name}-repo https://doomokun.github.io/3-tier-app-chart"
 
 	println "更新 repo"
 	sh "helm repo update"
@@ -19,10 +19,27 @@ def helmDeploy(Map args) {
 
 	if (args.dry_run) {
 		println "Debug 应用"
-		sh "helm upgrade --dry-run --debug --install ${args.name} ${args.chartDir} --set appServer.image.repository=${args.image} --set appServer.image.tag=${args.tag} --set appWeb.service.type=NodePort --set appServer.service.type=NodePort --namespace=${args.namespace} --create-namespace"
+		sh """
+			helm upgrade --install ${args.name} ${args.chartDir} \
+			--dry-run --debug \
+			--set appWeb.image.repository=${args.image} \
+			--set appWeb.image.tag=${args.tag} \
+			--set appWeb.service.type=NodePort \
+			--reuse-values
+			--namespace=${args.namespace} \
+			--create-namespace
+		"""
 	} else {
 		println "部署应用"
-		sh "helm upgrade --install ${args.name} ${args.chartDir} --set appServer.image.repository=${args.image} --set appServer.image.tag=${args.tag} --set appWeb.service.type=NodePort --set appServer.service.type=NodePort --namespace=${args.namespace} --create-namespace"
+		sh """
+			helm upgrade --install ${args.name} ${args.chartDir} \
+			--set appWeb.image.repository=${args.image} \
+			--set appWeb.image.tag=${args.tag} \
+			--set appWeb.service.type=NodePort \
+			--reuse-values
+			--namespace=${args.namespace} \
+			--create-namespace
+		"""
 		echo "应用 ${args.name} 部署成功. 可以使用 helm status ${args.name} 查看应用状态"
 	}
 }
@@ -36,6 +53,7 @@ podTemplate(label: label, containers: [
 ]) {
 	node(label) {
 		def imageEndpoint = "tommydevv1/cafe-web"
+		def appName = "3-tier-app"
 
 		stage('Fetch code') {
 			git branch: 'develop', credentialsId: 'jenkins-key', url: 'https://github.com/doomokun/cafe-web.git'
@@ -45,7 +63,7 @@ podTemplate(label: label, containers: [
 		}
 		stage('kaniko 构建 Docker 镜像') {
 			container('kaniko') {
-				sh "/kaniko/executor --context `pwd` --destination tommydevv1/cafe-web:${imageTag}"
+				sh "/kaniko/executor --context `pwd` --destination ${imageEndpoint}:${imageTag}"
 			}
 		}
 		stage('运行 Helm') {
@@ -53,9 +71,9 @@ podTemplate(label: label, containers: [
 				echo "4. [INFO] 开始 Helm 部署"
 				helmDeploy(
 					dry_run     : false,
-					name        : "3-tier-app",
-					chartDir    : "3-tier-app-repo/3-tier-app-chart",
-					namespace   : "3-tier-app",
+					name        : "${appName}",
+					chartDir    : "${appName}-repo/3-tier-app-chart",
+					namespace   : "${appName}",
 					tag         : "${imageTag}",
 					image       : "${imageEndpoint}"
 				)
