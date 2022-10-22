@@ -1,7 +1,8 @@
 <template>
   <div class="about">
-    <h1>app version: {{ env.VITE_APP_VERSION }}</h1>
-    <div>
+    <h1>version: {{ env.VITE_APP_VERSION }} | </h1>
+    <h2>server version: {{ serverVersion }} | </h2>
+    <div style="color: aqua;">
       api root: {{ env.VITE_API_ROOT }}
     </div>
     <div v-for="user in users">
@@ -24,6 +25,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { getUser } from "../apis/UserApi";
+import { getServerVersion } from "../apis/HealthCheck";
 export default defineComponent({
   name: 'AboutView',
   data() {
@@ -35,11 +37,13 @@ export default defineComponent({
         firstName: '',
         lastName: '',
       }],
+      serverVersion: '',
     }
   },
   methods: {
     async getData() {
       this.users = await getUser();
+      this.serverVersion = await getServerVersion();
     }
   },
   async mounted() {
