@@ -1,5 +1,6 @@
 <template>
   <div class="about">
+    <h1>app version: {{ env.VITE_APP_VERSION }}</h1>
     <div>
       api root: {{ env.VITE_API_ROOT }}
     </div>
@@ -21,30 +22,30 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue'
-  import { getUser } from "../apis/UserApi";
-  export default defineComponent({
-    name: 'AboutView',
-    data() {
-      return {
-        env: import.meta.env,
-        users: [{
-          id: '',
-          email: '',
-          firstName: '',
-          lastName: '',
-        }],
-      }
-    },
-    methods: {
-      async getData() {
-        this.users = await getUser();
-      }
-    },
-    async mounted() {
-      await this.getData();
-    },
-  });
+import { defineComponent } from 'vue'
+import { getUser } from "../apis/UserApi";
+export default defineComponent({
+  name: 'AboutView',
+  data() {
+    return {
+      env: import.meta.env,
+      users: [{
+        id: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+      }],
+    }
+  },
+  methods: {
+    async getData() {
+      this.users = await getUser();
+    }
+  },
+  async mounted() {
+    await this.getData();
+  },
+});
 </script>
 
 <style>

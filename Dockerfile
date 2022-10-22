@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . .
 
 ENV "VITE_API_ROOT" "http://<VITE_API_ROOT>/api"
+ENV "VITE_APP_VERSION" "<VITE_APP_VERSION>"
 # dev env
 # EXPOSE 3000
 # RUN npm install
