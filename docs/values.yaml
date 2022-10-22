@@ -5,6 +5,8 @@ appWeb:
   service:
     type: ClusterIP
   apiRoot:
+  port:
+    nodePort: 30218
 
 global:
   environment: dev
