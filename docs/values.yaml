@@ -1,0 +1,10 @@
+appWeb:
+  image:
+    repository: tommydevv1/cafe-web
+    tag: latest
+  service:
+    type: ClusterIP
+  apiRoot:
+
+global:
+  environment: dev

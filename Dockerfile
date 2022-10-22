@@ -7,7 +7,7 @@ USER node
 WORKDIR /app
 COPY . .
 
-ENV "VITE_API_ROOT_TEST" "http://localhost:8080/api"
+ENV "VITE_API_ROOT" "http://localhost:8080/docker/api"
 # dev env
 # EXPOSE 3000
 # RUN npm install
