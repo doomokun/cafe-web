@@ -27,21 +27,6 @@ spec:
       containers:
         - image: "{{ .Values.appWeb.image.repository }}:{{ .Values.appWeb.image.tag }}"
           name: app-web
-          env:
-            {{ range $node := (lookup "v1" "Node" "" "").items }}
-              {{ range $taint := $node.spec.taints }}
-                {{ if eq $taint.key "node-role.kubernetes.io/control-plane" }}
-                  {{ range $address := $node.status.addresses }}
-                    {{ if eq $address.type "ExternalIP" }}
-            - name: VITE_API_ROOT
-                      {{ range $port := (lookup "v1" "Service" $.Release.Namespace "app-server").spec.ports }}
-              value: "{{ $address.address }}:{{ $port.nodePort }}/api"
-                      {{ end }}
-                    {{ end }}
-                  {{ end }}
-                {{ end }}
-              {{ end }}
-            {{ end }}
           ports:
             - containerPort: 3000
           resources: {}
