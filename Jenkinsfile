@@ -53,30 +53,33 @@ podTemplate(label: label, containers: [
 		stage('Replace Docker ENV') {
 			container('kubectl') {
 				def apiServerIP = sh(returnStdout: true, script: "kubectl get nodes -l node-role.kubernetes.io/control-plane --all-namespaces -o jsonpath=\"{\$.items[*].status.addresses[?(@.type=='ExternalIP')].address}\"")
-				def apiServerPort = sh(returnStdout: true, script: "kubectl get svc app-server -n 3-tier-app -o jsonpath=\"{$.spec.ports[0].nodePort}\"")
-				def apiRoot = "${apiServerIP}:${apiServerPort}/api"
-				sh "sed -i 's/<VITE_API_ROOT>/${apiRoot}' Dockerfile"
-				sh "cat Dockerfile"
+				def apiServerPort = "30316"
+				try {
+					apiServerPort = sh(returnStdout: true, script: "kubectl get svc app-server -n 3-tier-app -o jsonpath='{\$.spec.ports[0].nodePort}'")
+				} catch (exc) {
+					println "Get Server IP Fail - ${currentBuild.fullDisplayName} - Skip"
+				}
+				sh "sed -i 's/<VITE_API_ROOT>/${apiServerIP}:${apiServerPort}/' Dockerfile"
 			}
 		}
-		// stage('kaniko 构建 Docker 镜像') {
-		// 	container('kaniko') {
-		// 		sh "/kaniko/executor --context `pwd` --destination ${imageEndpoint}:${imageTag}"
-		// 	}
-		// }
-		// stage('运行 Helm') {
-		// 	container('helm') {
-		// 		echo "4. [INFO] 开始 Helm 部署"
-		// 		helmDeploy(
-		// 			dry_run     : false,
-		// 			name        : "${appName}",
-		// 			chartDir    : "./docs",
-		// 			namespace   : "${appName}",
-		// 			tag         : "${imageTag}",
-		// 			image       : "${imageEndpoint}"
-		// 		)
-		// 		echo "[INFO] Helm 部署应用成功..."
-		// 	}
-		// }
+		stage('kaniko 构建 Docker 镜像') {
+			container('kaniko') {
+				sh "/kaniko/executor --context `pwd` --destination ${imageEndpoint}:${imageTag}"
+			}
+		}
+		stage('运行 Helm') {
+			container('helm') {
+				echo "4. [INFO] 开始 Helm 部署"
+				helmDeploy(
+					dry_run     : false,
+					name        : "${appName}",
+					chartDir    : "./docs",
+					namespace   : "${appName}",
+					tag         : "${imageTag}",
+					image       : "${imageEndpoint}"
+				)
+				echo "[INFO] Helm 部署应用成功..."
+			}
+		}
 	}
 }
