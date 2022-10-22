@@ -62,6 +62,7 @@ podTemplate(label: label, containers: [
 					println "Get Server IP Fail - ${currentBuild.fullDisplayName} - Skip"
 				}
 				sh "sed -i 's/<VITE_API_ROOT>/${apiServerIP}:${apiServerPort}/' Dockerfile"
+				sh "sed -i 's/<VITE_APP_VERSION>/${imageTag}/' Dockerfile"
 			}
 		}
 		stage('kaniko 构建 Docker 镜像') {
