@@ -1,4 +1,5 @@
-import axios from '@/utils/axios';
+// import axios from '@/utils/axios';
+import axios from 'axios';
 
 export const getUser = async (): Promise<any[]> => {
     try {
