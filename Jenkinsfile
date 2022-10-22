@@ -42,7 +42,9 @@ podTemplate(label: label, containers: [
 ]) {
 	node(label) {
 		def imageEndpoint = "tommydevv1/cafe-web"
-		def appName = "3-tier-app"
+		def namespace = "3-tier-app"
+		def serverName = "app-server"
+		def webName = "app-web"
 
 		stage('Fetch code') {
 			git branch: 'develop', credentialsId: 'jenkins-key', url: 'https://github.com/doomokun/cafe-web.git'
@@ -55,7 +57,7 @@ podTemplate(label: label, containers: [
 				def apiServerIP = sh(returnStdout: true, script: "kubectl get nodes -l node-role.kubernetes.io/control-plane --all-namespaces -o jsonpath=\"{\$.items[*].status.addresses[?(@.type=='ExternalIP')].address}\"")
 				def apiServerPort = "30316"
 				try {
-					apiServerPort = sh(returnStdout: true, script: "kubectl get svc app-server -n 3-tier-app -o jsonpath='{\$.spec.ports[0].nodePort}'")
+					apiServerPort = sh(returnStdout: true, script: "kubectl get svc ${serverName} -n ${namespace} -o jsonpath='{\$.spec.ports[0].nodePort}'")
 				} catch (exc) {
 					println "Get Server IP Fail - ${currentBuild.fullDisplayName} - Skip"
 				}
@@ -72,9 +74,9 @@ podTemplate(label: label, containers: [
 				echo "4. [INFO] 开始 Helm 部署"
 				helmDeploy(
 					dry_run     : false,
-					name        : "${appName}",
+					name        : "${webName}",
 					chartDir    : "./docs",
-					namespace   : "${appName}",
+					namespace   : "${namespace}",
 					tag         : "${imageTag}",
 					image       : "${imageEndpoint}"
 				)
