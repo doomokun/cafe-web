@@ -5,17 +5,8 @@ def helmInit() {
   	// sh "helm init --client-only --stable-repo-url https://mirror.azure.cn/kubernetes/charts/"
 }
 
-def helmRepo(Map args) {
-	println "添加 course repo"
-	sh "helm repo add ${args.name}-repo https://doomokun.github.io/3-tier-app-chart"
-
-	println "更新 repo"
-	sh "helm repo update"
-}
-
 def helmDeploy(Map args) {
 	helmInit()
-	helmRepo(args)
 
 	if (args.dry_run) {
 		println "Debug 应用"
@@ -25,7 +16,6 @@ def helmDeploy(Map args) {
 			--set appWeb.image.repository=${args.image} \
 			--set appWeb.image.tag=${args.tag} \
 			--set appWeb.service.type=NodePort \
-			--reuse-values
 			--namespace=${args.namespace} \
 			--create-namespace
 		"""
@@ -36,7 +26,6 @@ def helmDeploy(Map args) {
 			--set appWeb.image.repository=${args.image} \
 			--set appWeb.image.tag=${args.tag} \
 			--set appWeb.service.type=NodePort \
-			--reuse-values
 			--namespace=${args.namespace} \
 			--create-namespace
 		"""
@@ -61,24 +50,33 @@ podTemplate(label: label, containers: [
 				imageTag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
 			}
 		}
-		stage('kaniko 构建 Docker 镜像') {
-			container('kaniko') {
-				sh "/kaniko/executor --context `pwd` --destination ${imageEndpoint}:${imageTag}"
+		stage('Replace Docker ENV') {
+			container('kubectl') {
+				def apiServerIP = sh(returnStdout: true, script: "kubectl get nodes -l node-role.kubernetes.io/control-plane --all-namespaces -o jsonpath=\"{\$.items[*].status.addresses[?(@.type=='ExternalIP')].address}\"")
+				def apiServerPort = sh(returnStdout: true, script: "kubectl get svc app-server -n 3-tier-app -o jsonpath=\"{$.spec.ports[0].nodePort}\"")
+				def apiRoot = "${apiServerIP}:${apiServerPort}/api"
+				sh "sed -i 's/<VITE_API_ROOT>/${apiRoot}' Dockerfile"
+				sh "cat Dockerfile"
 			}
 		}
-		stage('运行 Helm') {
-			container('helm') {
-				echo "4. [INFO] 开始 Helm 部署"
-				helmDeploy(
-					dry_run     : false,
-					name        : "${appName}",
-					chartDir    : "${appName}-repo/3-tier-app-chart",
-					namespace   : "${appName}",
-					tag         : "${imageTag}",
-					image       : "${imageEndpoint}"
-				)
-				echo "[INFO] Helm 部署应用成功..."
-			}
-		}
+		// stage('kaniko 构建 Docker 镜像') {
+		// 	container('kaniko') {
+		// 		sh "/kaniko/executor --context `pwd` --destination ${imageEndpoint}:${imageTag}"
+		// 	}
+		// }
+		// stage('运行 Helm') {
+		// 	container('helm') {
+		// 		echo "4. [INFO] 开始 Helm 部署"
+		// 		helmDeploy(
+		// 			dry_run     : false,
+		// 			name        : "${appName}",
+		// 			chartDir    : "./docs",
+		// 			namespace   : "${appName}",
+		// 			tag         : "${imageTag}",
+		// 			image       : "${imageEndpoint}"
+		// 		)
+		// 		echo "[INFO] Helm 部署应用成功..."
+		// 	}
+		// }
 	}
 }
