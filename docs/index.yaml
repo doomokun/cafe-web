@@ -3,7 +3,17 @@ entries:
   cafe-web-chart:
   - apiVersion: v2
     appVersion: 1.17.0
-    created: "2022-10-22T09:53:44.239794+08:00"
+    created: "2022-10-22T10:43:48.73023+08:00"
+    description: A Helm chart for Kubernetes
+    digest: 07ebcadfb5bce2a84f6772d9f7af7d25324149b1b0ae3399f16abfa6c657410b
+    name: cafe-web-chart
+    type: application
+    urls:
+    - https://doomokun.github.io/cafe-web/cafe-web-chart-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 1.17.0
+    created: "2022-10-22T10:43:48.729819+08:00"
     description: A Helm chart for Kubernetes
     digest: 397bc9d182e836b34dc8912a4ed86ceddf1dab7723123fdaaf46383bfca49ff4
     name: cafe-web-chart
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://doomokun.github.io/cafe-web/cafe-web-chart-0.2.0.tgz
     version: 0.2.0
-generated: "2022-10-22T09:53:44.231692+08:00"
+generated: "2022-10-22T10:43:48.728994+08:00"
