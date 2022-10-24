@@ -1,6 +1,7 @@
 <template>
   <div class="about">
     <h1>version(image tag / branch code): {{ env.VITE_APP_VERSION }} | </h1>
+    <h1>History: {{ env.VITE_APP_HISTORY }} | </h1>
     <h2>server version: {{ serverVersion }} | </h2>
     <div style="color: aqua;">
       api root: {{ env.VITE_API_ROOT }}
